@@ -1,1 +1,111 @@
-<h1>TESTE</h1>
+<div class="list-buttons">
+    @for (item of buttons; track $index) {
+    <button class="item-button" [class.is-disabled]="item.disabled" [disabled]="item.disabled" [hidden]="!item.visible"
+        (click)="item.action()">{{
+        item.label }}</button>
+    }
+</div>
+
+<form>
+    <div class="item-form">
+        <label class="label-form">
+            <span>Nome: </span>
+            <input type="text" [formField]="firstForm.name" (blur)="onBlurName()" />
+            <p>{{ shortName() }}</p>
+
+            <p style="color: blue; font-size: 1.875rem; min-width: 100%; margin-left: 1em">{{messageName()}}</p>
+        </label>
+
+        @if (firstForm.name().touched() && firstForm.name().invalid()) {
+        <ul class="error-list">
+            @for (error of firstForm.name().errors(); track error) {
+            <li>{{ error.message }}</li>
+            }
+        </ul>
+        }
+    </div>
+
+    <div class="item-form">
+        <label class="label-form">
+            <span>Endereço: </span>
+            <input type="text" [formField]="firstForm.address" />
+            <p>{{firstForm.address().value()}}</p>
+        </label>
+    </div>
+
+
+    <div class="row-fields">
+        <fieldset>
+            <legend>Estado Civil</legend>
+            <div class="radio-grid">
+                @for (item of maritalStatusList; track item) {
+                <label>
+                    <input type="radio" value="{{ item }}" [formField]="firstForm.maritalStatus"
+                        (change)="resetSpouse(item)" />
+                    {{ item }}
+                </label>
+                }
+            </div>
+        </fieldset>
+
+        <div class="item-form">
+            <label class="label-form">
+                Cônjuge:
+                <input type="text" placeholder="Digite o Cônjuge" [formField]="firstForm.spouse" />
+            </label>
+        </div>
+    </div>
+
+
+    <div class="row-fields">
+        <div>
+            <label class="checkbox">
+                <input type="checkbox" [formField]="firstForm.hasOwnHouse" />
+                Casa Própria?
+            </label>
+
+            <!-- Habilitação -->
+            <label class="checkbox">
+                <input type="checkbox" [formField]="firstForm.hasDriverLicense" (click)="resetVehicleAll()"/>
+                Tem Habilitação?
+            </label>
+        </div>
+
+        <div class="item-form">
+            <label>Categoria</label>
+
+            <select [formField]="firstForm.category">
+                <option value="">Selecione</option>
+                <option value="A">Categoria A</option>
+                <option value="B">Categoria B</option>
+                <option value="C">Categoria C</option>
+                <option value="D">Categoria D</option>
+                <option value="E">Categoria E</option>
+            </select>
+        </div>
+    </div>
+
+    @if(firstForm.category().value() == 'D' && firstForm.hasDriverLicense().value() == true){
+    <div class="row-fields">
+        <div class="item-form">
+            <label>Veículos</label>
+
+            <select size="3" [formField]="firstForm.vehicle"
+                (change)="resetVehicleDetails()">
+                @for (vehicle of vehicles; track vehicle) {
+                <option [value]="vehicle">
+                    {{ vehicle }}
+                </option>
+                }
+            </select>
+        </div>
+
+        @if(firstForm.vehicle().value() == 'Besta'){
+        <div class="item-form">
+            <textarea rows="6" placeholder="Dados do veículo" [formField]="firstForm.vehicleDetails"></textarea>
+        </div>
+        }
+    </div>
+    }
+
+</form>
